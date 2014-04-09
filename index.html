@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+    <head>
+		<link href="./css/circles.css" type="text/css" rel="stylesheet" />
+		<link href="./css/reveal.css" type="text/css" rel="stylesheet" />
+        <title>Circles</title>
+    </head>
+    <body>
+        <script src="./js/jquery-2.1.0.min.js"></script>
+        <script src="./js/d3.v3.min.js" charset="utf-8"></script>
+        <script src="./js/circles.js" charset="utf-8"></script>
+        <script src="./js/jquery.reveal.js" charset="utf-8"></script>
+        <script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			
+			ga('create', 'UA-48858955-1', 'theconnman.github.io');
+			ga('send', 'pageview');
+		</script>
+		<a href="https://github.com/TheConnMan/Circles"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/c6625ac1f3ee0a12250227cf83ce904423abf351/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png"></a>
+		<div>
+			<table id='header'>
+				<tr>
+					<td><h1>Circles</h1></td>
+					<td style='float: right;'>
+						<table class='score'>
+							<tr>
+								<td class='label'>Best</td>
+							</tr>
+							<tr>
+								<td id='best' class='value'>&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+					<td style='float: right;'>
+						<table class='score'>
+							<tr>
+								<td class='label'>Speed</td>
+							</tr>
+							<tr>
+								<td id='speed' class='value'>0</td>
+							</tr>
+						</table>
+					</td>
+					<td style='float: right;'>
+						<table class='score'>
+							<tr>
+								<td class='label'>Circles</td>
+							</tr>
+							<tr>
+								<td id='circles' class='value'>0</td>
+							</tr>
+						</table>
+					</td>
+					<td style='float: right;'>
+						<table class='score'>
+							<tr>
+								<td class='label'>Level</td>
+							</tr>
+							<tr>
+								<td id='level' class='value'>0</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<table id='subheader'>
+				<tr>
+					<td><div style="width: 100%; text-align: right;"><button onclick="reset()">Reset</button></div></td>
+					<td><a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-text="Check out Circles!" data-hashtags="Circles" data-url="http://theconnman.github.io/Circles">Tweet</a></td>
+				</tr>
+			</table>
+			
+	        
+	        <div id="game"></div>
+	        <div id='content'>
+		        <p>
+		        	<b>GOAL:</b> The goal of each level is to create as large of a bubble as possible without it touching the moving circles. Clicking on the game will create
+		        	a small bubble which gets larger with a constant speed. The bubble stops growing when any other circle runs into it.
+		        </p>
+		        <p>
+		        	<b>HOW TO PLAY:</b> At first there will be a few slow moving circles. Click anywhere on the board (probably in a space where other circles are moving away)
+		        	and a bubble will begin to grow. There is a threshold size for the bubble to advance to the next level. Each level has more, faster moving obstacles.
+		        </p>
+	        </div>
+	        <div id="myModal" class="reveal-modal">
+			     <h1>You Won!</h1>
+			     <p id='winMessage'></p>
+			     <a class="close-reveal-modal">&#215;</a>
+			</div>
+			<div id="footer">
+				Created by Brian Conn. Contact me at <a href="mailto:brian@theconnman.com">brian@theconnman.com</a>.
+			</div>
+        </div>
+        <script>
+			var best = {}
+			$(document).ready(function() {
+				init($('#game').width(), $('#game').width() * .8, parseInt($('#size').html()))
+				if (!window.localStorage['bestCircleScores']) {
+					window.localStorage['bestCircleScores'] = JSON.stringify({})
+				} else if (window.localStorage['bestCircleScores'] && JSON.parse(window.localStorage['bestCircleScores'])[$('#size').html()]) {
+					$('#best').html(JSON.parse(window.localStorage['bestCircleScores'])[$('#size').html()])
+				}
+				!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+			})
+			
+			function reset() {
+			 	init($('#game').width(), $('#game').width() * .8, 1)
+			}
+        </script>
+    </body>
+</html>
