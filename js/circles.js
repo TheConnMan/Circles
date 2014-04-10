@@ -9,6 +9,7 @@ $(document).ready(function() {
 })
 
 function reset() {
+	$('#score').html(0);
  	init($('#game').width(), $('#game').width(), 1)
 }
 
