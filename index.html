@@ -31,7 +31,17 @@
 								<td class='label'>Best</td>
 							</tr>
 							<tr>
-								<td id='best' class='value'>&nbsp;</td>
+								<td id='best' class='value'>0</td>
+							</tr>
+						</table>
+					</td>
+					<td style='float: right;'>
+						<table class='score'>
+							<tr>
+								<td class='label'>Score</td>
+							</tr>
+							<tr>
+								<td id='score' class='value'>0</td>
 							</tr>
 						</table>
 					</td>
@@ -73,43 +83,25 @@
 					<td><a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-text="Check out Circles!" data-hashtags="Circles" data-url="http://theconnman.github.io/Circles">Tweet</a></td>
 				</tr>
 			</table>
-			
-	        
 	        <div id="game"></div>
-	        <div id='content'>
-		        <p>
-		        	<b>GOAL:</b> The goal of each level is to create as large of a bubble as possible without it touching the moving circles. Clicking on the game will create
-		        	a small bubble which gets larger with a constant speed. The bubble stops growing when any other circle runs into it.
-		        </p>
-		        <p>
-		        	<b>HOW TO PLAY:</b> At first there will be a few slow moving circles. Click anywhere on the board (probably in a space where other circles are moving away)
-		        	and a bubble will begin to grow. There is a threshold size for the bubble to advance to the next level. Each level has more, faster moving obstacles.
-		        </p>
+        	<div>
+	        	<div id='content'>
+			        <p>
+			        	<b>GOAL:</b> The goal of each level is to create as large of a bubble as possible without it touching the moving circles. Clicking on the game will create
+			        	a small bubble which gets larger with a constant speed. The bubble stops growing when any other circle runs into it.
+			        </p>
+			        <p>
+			        	<b>HOW TO PLAY:</b> At first there will be a few slow moving circles. Click anywhere on the board (probably in a space where other circles are moving away)
+			        	and a bubble will begin to grow. There is a threshold size for the bubble to advance to the next level. Each level has more, faster moving obstacles.
+			        </p>
+		        </div>
 	        </div>
-	        <div id="myModal" class="reveal-modal">
-			     <h1>You Won!</h1>
-			     <p id='winMessage'></p>
-			     <a class="close-reveal-modal">&#215;</a>
+	        <div id="levelEnd" class="reveal-modal">
+			     <div id="modalContent"></div>
 			</div>
 			<div id="footer">
 				Created by Brian Conn. Contact me at <a href="mailto:brian@theconnman.com">brian@theconnman.com</a>.
 			</div>
         </div>
-        <script>
-			var best = {}
-			$(document).ready(function() {
-				init($('#game').width(), $('#game').width() * .8, parseInt($('#size').html()))
-				if (!window.localStorage['bestCircleScores']) {
-					window.localStorage['bestCircleScores'] = JSON.stringify({})
-				} else if (window.localStorage['bestCircleScores'] && JSON.parse(window.localStorage['bestCircleScores'])[$('#size').html()]) {
-					$('#best').html(JSON.parse(window.localStorage['bestCircleScores'])[$('#size').html()])
-				}
-				!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-			})
-			
-			function reset() {
-			 	init($('#game').width(), $('#game').width() * .8, 1)
-			}
-        </script>
     </body>
 </html>

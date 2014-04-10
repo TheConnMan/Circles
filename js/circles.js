@@ -1,17 +1,34 @@
+$(document).ready(function() {
+	init($('#game').width(), $('#game').width(), 1)
+	if (!window.localStorage['bestCircleScores']) {
+		window.localStorage['bestCircleScores'] = 0
+	} else {
+		$('#best').html(window.localStorage['bestCircleScores'])
+	}
+	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+})
+
+function reset() {
+ 	init($('#game').width(), $('#game').width(), 1)
+}
+
+
 function init(w, h, level) {
 	
 	d3.select("#game").html('')
 
 	var svg = d3.select("#game").append("svg:svg").attr("width",
-			w).attr("height", h);
+			w).attr("height", h).attr("id", "svg");
 
-	var speed = 2
-	var size = 10
+	var speed = (18 + level * 2) / 10
+	var size = Math.floor(9 + level)
 	$('#speed').html(speed)
 	$('#circles').html(size)
+	$('#level').html(level)
+	
 	var moveDif = 50
 	var color = d3.scale.category10();
-	var nodes = d3.range(size).map(function() { return {radius: 10, x: Math.random() * w, y: Math.random() * h, v: speed, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0}; })
+	var nodes = d3.range(size).map(function() { return {radius: 10, x: Math.random() * w * .8 + w * .1, y: Math.random() * h * .8 + h * .1, v: speed, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0}; })
 	var moveNode;
 	var moveCircle;
 	var moveInterval;
@@ -64,11 +81,57 @@ function init(w, h, level) {
 					collide = true
 				}
 			})
+			if (d.x + d.radius >= w || d.x - d.radius <= 0 || d.y + d.radius >= h || d.y - d.radius <= 0) {
+				collide = true
+			}
 			if (collide) {
 				clearInterval(defaultInterval)
 				clearInterval(moveInterval)
+				levelEnd(d.radius, level)
 			}
 		})
 		moveCircle.attr("r", function(d) { return d.radius; })
+	}
+}
+
+function levelEnd(r, level) {
+	var html;
+	if (pass(r)) {
+		var s = parseInt($('#score').html()) + r
+		$('#score').html(s)
+		if (parseInt(window.localStorage['bestCircleScores']) < s) {
+			window.localStorage['bestCircleScores'] = s
+			$('#best').html(s)
+		}
+		html = '<h1>You Completed Level ' + level + '</h1>';
+		html += '<p>Your score was ' + r + '.</p>';
+		html += '<button class="close" onclick="nextLevel(' + level + ', ' + r + ')">Next Level</button>';
+	} else {
+		html = '<h1>You Failed Level ' + level + '</h1>';
+		html += '<p>Your score was ' + r + '.</p>';
+		html += '<button class="close" onclick="retryLevel(' + level + ')">Retry Level</button>';
+	}
+	$('#modalContent').html(html);
+	$('#levelEnd').reveal({
+	     animation: 'fadeAndPop',
+	     animationspeed: 300,
+	     closeonbackgroundclick: false,
+	     dismissmodalclass: 'close'
+	});
+}
+
+function nextLevel(level, r) {
+	init($('#game').width(), $('#game').width(), level + 1)
+}
+
+function retryLevel(level) {
+	init($('#game').width(), $('#game').width(), level)
+}
+
+function pass(r) {
+	if (r >= 100) {
+		return true;
+	} else {
+		return false;
 	}
 }
