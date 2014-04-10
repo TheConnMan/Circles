@@ -33,7 +33,8 @@ function init(w, h, level) {
 	var moveNode;
 	var moveCircle;
 	var moveInterval;
-	var buffer = 10
+	var buffer = 10;
+	var moveBool = false
 	
 	circles = svg.selectAll(".circle")
 		.data(nodes).enter()
@@ -44,14 +45,17 @@ function init(w, h, level) {
 		.style("fill", function(d, i) { return color(i % 5); })
 		
 	svg.on('mousedown', function() {
-		var co = d3.mouse(this)
-		moveNode = [{radius: 10, x: co[0], y: co[1]}]
-		moveCircle = svg.selectAll(".move").data(moveNode).enter()
-			.append("svg:circle")
-			.attr("class", "move")
-			.attr("r", function(d) { return d.radius; })
-			.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
-		moveInterval = setInterval(expand, 10)
+		if (!moveBool) {
+			var co = d3.mouse(this)
+			moveNode = [{radius: 10, x: co[0], y: co[1]}]
+			moveCircle = svg.selectAll(".move").data(moveNode).enter()
+				.append("svg:circle")
+				.attr("class", "move")
+				.attr("r", function(d) { return d.radius; })
+				.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+			moveInterval = setInterval(expand, 10)
+			moveBool = true
+		}
 	})
 	
 	var defaultInterval = setInterval(redraw, 10)
