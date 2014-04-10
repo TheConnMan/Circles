@@ -29,7 +29,7 @@ function init(w, h, level) {
 	
 	var moveDif = 50
 	var color = d3.scale.category10();
-	var nodes = d3.range(size).map(function() { return {radius: 10, x: Math.random() * w * .8 + w * .1, y: Math.random() * h * .8 + h * .1, v: speed, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0}; })
+	var nodes = d3.range(size).map(function() { return {radius: 8 + Math.floor(Math.random() * 10), x: Math.random() * w * .8 + w * .1, y: Math.random() * h * .8 + h * .1, v: speed, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0}; })
 	var moveNode;
 	var moveCircle;
 	var moveInterval;
