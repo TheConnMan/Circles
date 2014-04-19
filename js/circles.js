@@ -1,119 +1,153 @@
+var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
+		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
+		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
+		4: {title: 'Slow Mo', avgSize: 25, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: .25},
+		5: {title: 'Speed of Light', avgSize: 15, sizeVar: 5, momentum: 600, ballNum: 10, expandSpeed: 3},
+		6: {title: 'Atoms', avgSize: 5, sizeVar: 0, momentum: 25, ballNum: 30, expandSpeed: 1},
+		7: {title: 'Big Ben', avgSize: 200, sizeVar: 0, momentum: 50000, ballNum: 1, expandSpeed: 1},
+		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 1},
+		9: {title: 'Conservation of Momentum', r: function(o) { return 30 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o) / 2); }, momentum: 300, ballNum: 10, expandSpeed: 1},
+		10: {title: 'Tadpoles', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 100, ballNum: 20, expandSpeed: 1}}
+
 $(document).ready(function() {
-	init($('#game').width(), $('#game').width(), 1)
+	gameW = $('#game').width(), gameH = $('#game').width();
 	if (!window.localStorage['bestCircleScores']) {
-		window.localStorage['bestCircleScores'] = 0
+		window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
+		init(1)
 	} else {
-		$('#best').html(window.localStorage['bestCircleScores'])
+		$('#best').html(JSON.parse(window.localStorage['bestCircleScores'])[1])
+		var a = Object.keys(JSON.parse(window.localStorage['bestCircleScores']))
+		init(a[a.length - 1])
 	}
 	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 })
 
-function reset() {
-	$('#score').html(0);
- 	init($('#game').width(), $('#game').width(), 1)
-}
-
-
-function init(w, h, level) {
+function init(level) {
 	
 	d3.select("#game").html('')
 
-	var svg = d3.select("#game").append("svg:svg").attr("width",
-			w).attr("height", h).attr("id", "svg");
+	var svg = d3.select("#game").append("svg:svg")
+				.attr("width", gameW).attr("height", gameH).attr("id", "svg");
 
-	var speed = (18 + level * 2) / 10
-	var size = Math.floor(9 + level)
-	$('#speed').html(speed)
-	$('#circles').html(size)
-	$('#level').html(level)
+	var params = levels[level]
+
+	$('#title').html(params.title)
+	var best = JSON.parse(window.localStorage['bestCircleScores'])
+	if (!best[level]) {
+		best[level] = 0
+		window.localStorage['bestCircleScores'] = JSON.stringify(best)
+	}
+	initLevels(Object.keys(levels), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
+	$('#best').html(best[level])
 	
 	var moveDif = 50
 	var color = d3.scale.category10();
-	var nodes = d3.range(size).map(function() { return {radius: 8 + Math.floor(Math.random() * 10), x: Math.random() * w * .8 + w * .1, y: Math.random() * h * .8 + h * .1, v: speed, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0}; })
+	var nodes = d3.range(params.ballNum).map(function() {
+		var r;
+		var rad;
+		var o = Math.random()
+		if (params.r) {
+			r = params.r(o)
+			rad = params.r
+		} else {
+			r = params.avgSize + Math.floor(2 * params.sizeVar * Math.random()) - params.sizeVar;
+			rad = r
+		}
+		return {radius: rad, x: Math.random() * (gameW - 2 * r) + r, y: Math.random() * (gameH - 2 * r) + r, m: params.momentum, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0, o: o};
+	})
 	var moveNode;
 	var moveCircle;
 	var moveInterval;
-	var buffer = 10;
 	var moveBool = false
 	
 	circles = svg.selectAll(".circle")
 		.data(nodes).enter()
 		.append("svg:circle")
 		.attr("class", "circle")
-		.attr("r", function(d) { return d.radius; })
+		.attr("r", function(d) { return ($.isFunction(d.radius) ? d.radius(d.o) : d.radius); })
 		.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
 		.style("fill", function(d, i) { return color(i % 5); })
 		
 	svg.on('mousedown', function() {
 		if (!moveBool) {
 			var co = d3.mouse(this)
-			moveNode = [{radius: 10, x: co[0], y: co[1]}]
+			moveNode = [{radius: 1, x: co[0], y: co[1]}]
 			moveCircle = svg.selectAll(".move").data(moveNode).enter()
 				.append("svg:circle")
 				.attr("class", "move")
 				.attr("r", function(d) { return d.radius; })
 				.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
-			moveInterval = setInterval(expand, 10)
+			moveInterval = setInterval(expand, 1)
 			moveBool = true
 		}
 	})
 	
-	var defaultInterval = setInterval(redraw, 10)
+	var defaultInterval = setInterval(redraw, 1)
 			
 	function redraw() {
 		nodes.forEach(function(d) {
-			if ((d.y >= h - d.r - buffer || d.y <= d.r + buffer) && (d.c - d.dy) >= moveDif) {
+			var r = ($.isFunction(d.radius) ? d.radius(d.o) : d.radius)
+			if ((d.y >= gameH - r || d.y <= r) && (d.c - d.dy) >= moveDif) {
 				d.r = 2 * Math.PI - d.r;
 				d.dy = d.c
 			}
-			if ((d.x >= w - d.r - buffer || d.x <= d.r + buffer) && (d.c - d.dx) >= moveDif) {
+			if ((d.x >= gameW - r || d.x <= r) && (d.c - d.dx) >= moveDif) {
 				d.r = (Math.PI - d.r) % (2 * Math.PI)
 				d.dx = d.c
 			}
-			d.x += d.v * Math.cos(d.r);
-			d.y += d.v * Math.sin(d.r);
+			d.x += d.m / (r * r) * Math.cos(d.r);
+			d.y += d.m / (r * r) * Math.sin(d.r);
 			d.c++
 		})
+		svg.selectAll(".circle").attr("r", function(d) { return ($.isFunction(d.radius) ? d.radius(d.o) : d.radius); })
 		circles.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
 	}
 	
 	function expand() {
 		moveNode.forEach(function(d) {
-			d.radius += 1
+			d.radius += params.expandSpeed / 5
 			var collide = false
 			nodes.forEach(function(n) {
-				if (n.radius + d.radius >= Math.sqrt(Math.pow(d.x - n.x, 2) + Math.pow(d.y - n.y, 2))) {
+				if (($.isFunction(n.radius) ? n.radius(n.o) : n.radius) + d.radius >= Math.sqrt(Math.pow(d.x - n.x, 2) + Math.pow(d.y - n.y, 2))) {
 					collide = true
 				}
 			})
-			if (d.x + d.radius >= w || d.x - d.radius <= 0 || d.y + d.radius >= h || d.y - d.radius <= 0) {
+			if (d.x + d.radius >= gameW || d.x - d.radius <= 0 || d.y + d.radius >= gameH || d.y - d.radius <= 0) {
 				collide = true
 			}
 			if (collide) {
 				clearInterval(defaultInterval)
 				clearInterval(moveInterval)
-				levelEnd(d.radius, level)
+				levelEnd(Math.floor(d.radius), level)
 			}
 		})
 		moveCircle.attr("r", function(d) { return d.radius; })
 	}
 }
 
-function levelEnd(r, level) {
+function levelEnd(s, level) {
 	var html;
-	if (pass(r)) {
-		var s = parseInt($('#score').html()) + r
-		$('#score').html(s)
-		if (parseInt(window.localStorage['bestCircleScores']) < s) {
-			window.localStorage['bestCircleScores'] = s
+	if (pass(s)) {
+		var best = JSON.parse(window.localStorage['bestCircleScores'])
+		html = '<h1>You Completed Level ' + level + '</h1>';
+		html += '<p>Your score was ' + s + '.</p>';
+		if (best[level] < s && best[level] != 0) {
+			html += '<p>New high score!</p>';
+		}
+		if (levels[parseInt(level) + 1]) {
+			html += '<button class="close" onclick="nextLevel(' + level + ', ' + s + ')">Next Level</button>';
+		} else {
+			html += "<p>Congratulations, you've beaten all the levels!</p>";
+		}
+		html += '<button class="close" onclick="retryLevel(' + level + ')">Retry Level</button>';
+		if (best[level] < s) {
+			best[level] = s
+			window.localStorage['bestCircleScores'] = JSON.stringify(best)
 			$('#best').html(s)
 		}
-		html = '<h1>You Completed Level ' + level + '</h1>';
-		html += '<p>Your score was ' + r + '.</p>';
-		html += '<button class="close" onclick="nextLevel(' + level + ', ' + r + ')">Next Level</button>';
 	} else {
 		html = '<h1>You Failed Level ' + level + '</h1>';
-		html += '<p>Your score was ' + r + '.</p>';
+		html += '<p>Your score was ' + s + '.</p>';
 		html += '<button class="close" onclick="retryLevel(' + level + ')">Retry Level</button>';
 	}
 	$('#modalContent').html(html);
@@ -125,12 +159,49 @@ function levelEnd(r, level) {
 	});
 }
 
+function initLevels(all, open, cur) {
+
+	d3.select("#levels").html('')
+	
+	var w = 300, h = $('#header').height(), perRow = 10, rw = w / perRow, pad = 2;
+	var svg = d3.select("#levels").append("svg:svg")
+		.attr("width", w).attr("height", h).attr("id", "levelSvg");
+	
+	var nodes = d3.range(all.length).map(function(d) {
+		return { level: all[d], open: (open.indexOf(all[d]) != -1), h: rw - 2 * pad, w: rw - 2 * pad, x: (d * rw) % w + pad, y: Math.floor(d / perRow) * rw + pad };
+	})
+
+	var root = svg.selectAll(".level")
+		.data(nodes).enter()
+		.append("g")
+		.attr("width", function(d) { return d.w; })
+		.attr("height", function(d) { return d.h; })
+	var rect = root
+		.append("svg:rect")
+		.attr("class", "level")
+		.attr("x", function(d) { return d.x; })
+		.attr("y", function(d) { return d.y; })
+		.attr("width", function(d) { return d.w; })
+		.attr("height", function(d) { return d.h; })
+		.style("fill", function(d) { return (d.level == cur ? 'blue' : (d.open ? 'lightblue' : 'gray')); })
+	root.append('text')
+		.attr('class', 'levelText')
+		.attr("transform", function(d) { return 'translate(' + (d.x + d.w / 2) + ',' + (d.y + d.h / 2 + 6) + ')'; })
+		.text(function(d) { return d.level; });
+	
+	root.on('click', function(d) {
+		//if (d.open) {
+			init(d.level)
+		//}
+	})
+}
+
 function nextLevel(level, r) {
-	init($('#game').width(), $('#game').width(), level + 1)
+	init(level + 1)
 }
 
 function retryLevel(level) {
-	init($('#game').width(), $('#game').width(), level)
+	init(level)
 }
 
 function pass(r) {

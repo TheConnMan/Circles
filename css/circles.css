@@ -1,5 +1,4 @@
 body {
-	text-align: center;
 	background-color: #DDDDDD;
 	width: 700px;
 	margin: 0 auto;
@@ -28,6 +27,10 @@ h1 {
 	margin-bottom: 10px;
 }
 
+h2 {
+	margin: 0;
+}
+
 p {
 	color: #555555;
 }
@@ -48,6 +51,11 @@ p {
 	margin-top: 20px;
 	margin-bottom: 20px;
 	color: #555555;
+	text-align: center;
+}
+
+#levelEnd {
+	text-align: center;
 }
 
 #size {
@@ -55,7 +63,7 @@ p {
 }
 
 #subheader {
-	float: right;
+	width: 100%;
 }
 
 #svg {
@@ -78,11 +86,23 @@ p {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border-radius: 10px;
+	text-align: center;
 }
 
 .label {
 	color: #EEEEEE;
 	font-weight: bold;
+}
+
+.level {
+	cursor: pointer;
+}
+
+.levelText {
+	text-anchor: middle;
+	font-weight: bold;
+	fill: white;
+	cursor: pointer;
 }
 
 .button {
