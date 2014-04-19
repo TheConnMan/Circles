@@ -1,3 +1,20 @@
+/*
+ * OPTIONS
+ * Required
+ * title - Title of the level
+ * momentum - Total momentum of each circle
+ * ballNum - Number of circles
+ * expandSpeed - Expansion speed of the user's circle
+ * 
+ * One of the following sets
+ * avgSize, sizeVar - Average radius of a circle, variance of the circle radius
+ * r - Radius of each node, can be a function
+ * 
+ * Optional
+ * angle - Starting angle of each node, can be a function
+ * randAngleInt - Interval in milliseconds when each circle gets a new, random angle
+ */
+
 var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
 		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
 		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
@@ -7,7 +24,10 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		7: {title: 'Big Ben', avgSize: 200, sizeVar: 0, momentum: 50000, ballNum: 1, expandSpeed: 1},
 		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 1},
 		9: {title: 'Conservation of Momentum', r: function(o) { return 30 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o) / 2); }, momentum: 300, ballNum: 10, expandSpeed: 1},
-		10: {title: 'Tadpoles', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 100, ballNum: 20, expandSpeed: 1}}
+		10: {title: 'Tadpoles', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 100, ballNum: 20, expandSpeed: 1},
+		11: {title: 'Crossing Traffic', avgSize: 20, sizeVar: 5, angle: function(o) { return o > .5 ? Math.PI : 0; }, momentum: 300, ballNum: 20, expandSpeed: 1},
+		12: {title: 'Stop and Start', avgSize: 20, sizeVar: 5, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
+		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1}}
 
 $(document).ready(function() {
 	gameW = $('#game').width(), gameH = $('#game').width();
@@ -53,7 +73,14 @@ function init(level) {
 			r = params.avgSize + Math.floor(2 * params.sizeVar * Math.random()) - params.sizeVar;
 			rad = r
 		}
-		return {radius: rad, x: Math.random() * (gameW - 2 * r) + r, y: Math.random() * (gameH - 2 * r) + r, m: params.momentum, r: Math.random() * 2 * Math.PI, c: moveDif, dx: 0, dy: 0, o: o};
+		return {radius: rad,
+			x: Math.random() * (gameW - 2 * r) + r,
+			y: Math.random() * (gameH - 2 * r) + r,
+			m: params.momentum,
+			r: (params.angle ? ($.isFunction(params.angle) ? params.angle(o) : params.angle) : Math.random() * 2 * Math.PI),
+			int: (params.randAngleInt ? params.randAngleInt : 0),
+			lastChange: (params.randAngleInt ? new Date().getTime() : 0),
+			c: moveDif, dx: 0, dy: 0, o: o};
 	})
 	var moveNode;
 	var moveCircle;
@@ -97,6 +124,10 @@ function init(level) {
 			}
 			d.x += d.m / (r * r) * Math.cos(d.r);
 			d.y += d.m / (r * r) * Math.sin(d.r);
+			if (d.int && new Date().getTime() > d.lastChange + d.int) {
+				d.r = 2 * Math.random() * Math.PI;
+				d.lastChange = new Date().getTime()
+			}
 			d.c++
 		})
 		svg.selectAll(".circle").attr("r", function(d) { return ($.isFunction(d.radius) ? d.radius(d.o) : d.radius); })
@@ -190,9 +221,9 @@ function initLevels(all, open, cur) {
 		.text(function(d) { return d.level; });
 	
 	root.on('click', function(d) {
-		//if (d.open) {
+		if (d.open) {
 			init(d.level)
-		//}
+		}
 	})
 }
 
