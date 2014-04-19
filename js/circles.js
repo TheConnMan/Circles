@@ -19,19 +19,19 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
 		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
 		4: {title: 'Slow Mo', avgSize: 25, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: .25},
-		5: {title: 'Speed of Light', avgSize: 15, sizeVar: 5, momentum: 600, ballNum: 10, expandSpeed: 3},
+		5: {title: 'Light Speed', avgSize: 15, sizeVar: 5, momentum: 600, ballNum: 10, expandSpeed: 3},
 		6: {title: 'Atoms', avgSize: 5, sizeVar: 0, momentum: 25, ballNum: 30, expandSpeed: 1},
 		7: {title: 'Big Ben', avgSize: 200, sizeVar: 0, momentum: 50000, ballNum: 1, expandSpeed: 1},
-		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 1},
+		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 1.5},
 		9: {title: 'Conservation of Momentum', r: function(o) { return 30 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o) / 2); }, momentum: 300, ballNum: 10, expandSpeed: 1},
 		10: {title: 'Tadpoles', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 100, ballNum: 20, expandSpeed: 1},
-		11: {title: 'Crossing Traffic', avgSize: 20, sizeVar: 5, angle: function(o) { return o > .5 ? Math.PI : 0; }, momentum: 300, ballNum: 20, expandSpeed: 1},
+		11: {title: 'Crossing Traffic', avgSize: 20, sizeVar: 5, angle: function(o) { return o > .5 ? Math.PI : 0; }, momentum: 300, ballNum: 15, expandSpeed: 1},
 		12: {title: 'Stop and Start', avgSize: 20, sizeVar: 5, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1}}
 
 $(document).ready(function() {
 	gameW = $('#game').width(), gameH = $('#game').width();
-	if (!window.localStorage['bestCircleScores']) {
+	if (!window.localStorage['bestCircleScores'] || typeof(JSON.parse(window.localStorage['bestCircleScores'])) != 'object') {
 		window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
 		init(1)
 	} else {
@@ -158,28 +158,28 @@ function init(level) {
 
 function levelEnd(s, level) {
 	var html;
+	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (pass(s)) {
-		var best = JSON.parse(window.localStorage['bestCircleScores'])
 		html = '<h1>You Completed Level ' + level + '</h1>';
 		html += '<p>Your score was ' + s + '.</p>';
 		if (best[level] < s && best[level] != 0) {
 			html += '<p>New high score!</p>';
 		}
 		if (levels[parseInt(level) + 1]) {
-			html += '<button class="close" onclick="nextLevel(' + level + ', ' + s + ')">Next Level</button>';
+			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
 		} else {
 			html += "<p>Congratulations, you've beaten all the levels!</p>";
 		}
-		html += '<button class="close" onclick="retryLevel(' + level + ')">Retry Level</button>';
-		if (best[level] < s) {
-			best[level] = s
-			window.localStorage['bestCircleScores'] = JSON.stringify(best)
-			$('#best').html(s)
-		}
+		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
 	} else {
 		html = '<h1>You Failed Level ' + level + '</h1>';
 		html += '<p>Your score was ' + s + '.</p>';
-		html += '<button class="close" onclick="retryLevel(' + level + ')">Retry Level</button>';
+		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
+	}
+	if (best[level] < s) {
+		best[level] = s
+		window.localStorage['bestCircleScores'] = JSON.stringify(best)
+		$('#best').html(s)
 	}
 	$('#modalContent').html(html);
 	$('#levelEnd').reveal({
@@ -191,7 +191,6 @@ function levelEnd(s, level) {
 }
 
 function initLevels(all, open, cur) {
-
 	d3.select("#levels").html('')
 	
 	var w = 300, h = $('#header').height(), perRow = 10, rw = w / perRow, pad = 2;
@@ -227,18 +226,6 @@ function initLevels(all, open, cur) {
 	})
 }
 
-function nextLevel(level, r) {
-	init(level + 1)
-}
-
-function retryLevel(level) {
-	init(level)
-}
-
 function pass(r) {
-	if (r >= 100) {
-		return true;
-	} else {
-		return false;
-	}
+	return r >= 100
 }
