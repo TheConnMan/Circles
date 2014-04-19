@@ -41,6 +41,10 @@ p {
 	width: 600px;
 }
 
+#custom {
+	display: none;
+}
+
 #header {
 	width: 100%;
 	margin: 0 auto;
@@ -68,6 +72,7 @@ p {
 
 #svg {
 	border: 1px solid black;
+	background-color: white;
 }
 
 #widget {

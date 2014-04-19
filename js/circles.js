@@ -22,20 +22,30 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		5: {title: 'Light Speed', avgSize: 15, sizeVar: 5, momentum: 600, ballNum: 10, expandSpeed: 3},
 		6: {title: 'Atoms', avgSize: 5, sizeVar: 0, momentum: 25, ballNum: 30, expandSpeed: 1},
 		7: {title: 'Big Ben', avgSize: 200, sizeVar: 0, momentum: 50000, ballNum: 1, expandSpeed: 1},
-		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 1.5},
+		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 2},
 		9: {title: 'Conservation of Momentum', r: function(o) { return 30 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o) / 2); }, momentum: 300, ballNum: 10, expandSpeed: 1},
 		10: {title: 'Tadpoles', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 100, ballNum: 20, expandSpeed: 1},
-		11: {title: 'Crossing Traffic', avgSize: 20, sizeVar: 5, angle: function(o) { return o > .5 ? Math.PI : 0; }, momentum: 300, ballNum: 15, expandSpeed: 1},
+		11: {title: 'Crossing Traffic', avgSize: 20, sizeVar: 5, angle: function(o) { return o > .5 ? Math.PI : 0; }, momentum: 400, ballNum: 15, expandSpeed: 1},
 		12: {title: 'Stop and Start', avgSize: 20, sizeVar: 5, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1}}
+var custom = {}
 
 $(document).ready(function() {
 	gameW = $('#game').width(), gameH = $('#game').width();
+	if (window.localStorage['circleCustom']) {
+		custom = JSON.parse(window.localStorage['circleCustom'])
+	}
 	if (!window.localStorage['bestCircleScores'] || typeof(JSON.parse(window.localStorage['bestCircleScores'])) != 'object') {
 		window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
 		init(1)
+		$('#levelEnd').reveal({
+		     animation: 'fadeAndPop',
+		     animationspeed: 300,
+		     closeonbackgroundclick: true,
+		     dismissmodalclass: 'close'
+		});
 	} else {
-		$('#best').html(JSON.parse(window.localStorage['bestCircleScores'])[1])
+		renumberCustom()
 		var a = Object.keys(JSON.parse(window.localStorage['bestCircleScores']))
 		init(a[a.length - 1])
 	}
@@ -50,6 +60,23 @@ function init(level) {
 				.attr("width", gameW).attr("height", gameH).attr("id", "svg");
 
 	var params = levels[level]
+	if (!params) {
+		params = custom[level]
+		$('#delete').show()
+		$('#delete').unbind('click');
+		$('#delete').click(function() {
+			delete custom[level];
+			['bestCircleScores', 'circleCustom'].forEach(function(d) {
+				var sto = JSON.parse(window.localStorage[d]);
+				delete sto[level];
+				window.localStorage[d] = JSON.stringify(sto);
+			})
+			renumberCustom();
+			$('#delete').hide();
+			var a = Object.keys(levels).concat(Object.keys(custom))
+			init(a[a.length - 1]);
+		})
+	}
 
 	$('#title').html(params.title)
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
@@ -57,7 +84,7 @@ function init(level) {
 		best[level] = 0
 		window.localStorage['bestCircleScores'] = JSON.stringify(best)
 	}
-	initLevels(Object.keys(levels), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
+	initLevels(Object.keys(levels).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
 	$('#best').html(best[level])
 	
 	var moveDif = 50
@@ -165,10 +192,12 @@ function levelEnd(s, level) {
 		if (best[level] < s && best[level] != 0) {
 			html += '<p>New high score!</p>';
 		}
-		if (levels[parseInt(level) + 1]) {
+		if (levels[parseInt(level) + 1] && custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
 		} else {
-			html += "<p>Congratulations, you've beaten all the levels!</p>";
+			html += "<p>Congratulations, you've beaten all the levels! Now you can build your own!</p>";
+			$('#custom').show();
+			html += '<button class="close" onclick="window.location.href=\'#custom\'">Build My Own</button>';
 		}
 		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
 	} else {
@@ -228,4 +257,42 @@ function initLevels(all, open, cur) {
 
 function pass(r) {
 	return r >= 100
+}
+
+function build() {
+	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
+	var t = $('#buildTitle').val(), n = parseInt($('#buildNum').val()), size = parseInt($('#buildSize').val()), v = $('#buildVariance').val() * size, speed = parseFloat($('#buildSpeed').val()), e = $('#buildExpansion').val();
+	if (t && n) {
+		custom[num] = {title: t, avgSize: size, sizeVar: v, momentum: size * size * speed / 5, ballNum: n, expandSpeed: e};
+		window.localStorage['circleCustom'] = JSON.stringify(custom);
+		init(num)
+	} else {
+		var html = '<h1>Error</h1>';
+		html += '<p>Your title or number of circles was invalid.</p>';
+		html += '<button class="close">My b</button>';
+		$('#modalContent').html(html);
+		$('#levelEnd').reveal({
+		     animation: 'fadeAndPop',
+		     animationspeed: 300,
+		     closeonbackgroundclick: true,
+		     dismissmodalclass: 'close'
+		});
+	}
+}
+
+function renumberCustom() {
+	var levelKeys = Object.keys(levels)
+	var levelMax = levelKeys[levelKeys.length - 1]
+	var customKeys = Object.keys(custom)
+	var temp = {}
+	var best = JSON.parse(window.localStorage['bestCircleScores']);
+	var bestTemp = JSON.parse(window.localStorage['bestCircleScores']);
+	customKeys.forEach(function(d, i) {
+		delete bestTemp[d]
+		bestTemp[parseInt(levelMax) + i + 1] = best[d];
+		temp[parseInt(levelMax) + i + 1] = custom[d];
+	})
+	custom = temp;
+	window.localStorage['circleCustom'] = JSON.stringify(custom);
+	window.localStorage['bestCircleScores'] = JSON.stringify(bestTemp);
 }

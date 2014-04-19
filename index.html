@@ -43,15 +43,80 @@
 			<table id='subheader'>
 				<tr>
 					<td><h2 id="title"></h2>
-					<td style="text-align: right;"><a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-text="Check out Circles!" data-hashtags="Circles" data-url="http://theconnman.github.io/Circles">Tweet</a></td>
+					<td style="text-align: right;">
+						<button id="delete" style="display: none;">Delete</button>
+						<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-text="Check out Circles!" data-hashtags="Circles" data-url="http://theconnman.github.io/Circles">Tweet</a>
+					</td>
 				</tr>
 			</table>
 	        <div id="game"></div>
+	        <div id="custom">
+	        	<h1>Build Your Own Level</h1>
+	        	<table>
+	        		<tr>
+	        			<td>Title:</td>
+	        			<td><input id="buildTitle" type="text" value="Custom Level" />
+	        		</tr>
+	        		<tr>
+	        			<td>Number of Circles:</td>
+	        			<td><input id="buildNum" type="number" min="0" value="10" /></td>
+	        		</tr>
+	        		<tr>
+	        			<td>Size:</td>
+	        			<td>
+	        				<select id="buildSize">
+	        					<option value="5">Micro</option>
+	        					<option value="10" selected>Small</option>
+	        					<option value="15">Medium</option>
+	        					<option value="25">Large</option>
+	        					<option value="40">Extra-Large</option>
+	        				</select>
+	        			</td>
+	        		</tr>
+	        		<tr>
+	        			<td>Size Variance:</td>
+	        			<td>
+	        				<select id="buildVariance">
+	        					<option value="0">None</option>
+	        					<option value=".25" selected>Small</option>
+	        					<option value=".5">Medium</option>
+	        					<option value=".75">Large</option>
+	        				</select>
+	        			</td>
+	        		</tr>
+	        		<tr>
+	        			<td>Circle Speed:</td>
+	        			<td>
+	        				<select id="buildSpeed">
+	        					<option value="1">Molasses</option>
+	        					<option value="3">Slow</option>
+	        					<option value="5" selected>Medium</option>
+	        					<option value="10">Fast</option>
+	        					<option value="15">Light Speed</option>
+	        				</select>
+	        			</td>
+	        		</tr>
+	        		<tr>
+	        			<td>Black Circle Expansion Speed:</td>
+	        			<td>
+	        				<select id="buildExpansion">
+	        					<option value=".1">Molasses</option>
+	        					<option value=".5">Slow</option>
+	        					<option value="1" selected>Medium</option>
+	        					<option value="2">Fast</option>
+	        					<option value="3">Light Speed</option>
+	        				</select>
+	        			</td>
+	        		</tr>
+	        	</table>
+	        	<button onclick="build()">Build</button>
+	        </div>
         	<div>
 	        	<div id='content'>
 			        <p>
 			        	<b>GOAL:</b> The goal of each level is to create as large of a bubble as possible without it touching the moving circles. Clicking on the game will create
 			        	a small bubble which gets larger with a constant speed. The bubble stops growing when any other circle runs into it. To pass the level you need to reach a size of over 100.
+			        	If you beat all the levels you get to create custom levels of your own.
 			        </p>
 			        <p>
 			        	<b>HOW TO PLAY:</b> At first there will be a few slow moving circles. Click anywhere on the board (probably in a space where other circles are moving away)
@@ -60,7 +125,14 @@
 		        </div>
 	        </div>
 	        <div id="levelEnd" class="reveal-modal">
-			     <div id="modalContent"></div>
+			     <div id="modalContent">
+			     	<h1>Welcome to Circles!</h1>
+			     	<p>
+			     		The goal of the game is simple: click where there are no circles! Clicking will create an expanding circle. The bigger the circle before it gets hit the more points you get!
+			     		Getting a circle with a score of over 100 advances you to the next level. If you beat all the levels you get to create levels of your own. Good luck!
+			     	</p>
+			     	<button class="close">Lemme At 'Em!</button>
+			     </div>
 			</div>
 			<div id="footer">
 				Created by Brian Conn. Contact me at <a href="mailto:brian@theconnman.com">brian@theconnman.com</a>.
