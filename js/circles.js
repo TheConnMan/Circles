@@ -35,7 +35,8 @@ $(document).ready(function() {
 	if (window.localStorage['circleCustom']) {
 		custom = JSON.parse(window.localStorage['circleCustom'])
 	}
-	if (!window.localStorage['bestCircleScores'] || typeof(JSON.parse(window.localStorage['bestCircleScores'])) != 'object') {
+	var sto = window.localStorage['bestCircleScores']
+	if (!sto || typeof(JSON.parse(sto)) != 'object' || !JSON.parse(sto)[1]) {
 		window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
 		init(1)
 		$('#levelEnd').reveal({
