@@ -29,6 +29,7 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		12: {title: 'Stop and Start', avgSize: 20, sizeVar: 5, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1}}
 var custom = {}
+var successColor = 'lightblue';
 
 $(document).ready(function() {
 	gameW = $('#game').width(), gameH = $('#game').width();
@@ -131,7 +132,7 @@ function init(level) {
 				.append("svg:circle")
 				.attr("class", "move")
 				.attr("r", function(d) { return d.radius; })
-				.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
+				.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')rotate(270)'; })
 			moveInterval = setInterval(expand, 1)
 			moveBool = true
 		}
@@ -180,6 +181,11 @@ function init(level) {
 				levelEnd(Math.floor(d.radius), level)
 			}
 		})
+		
+		d3.select('.move').attr('stroke-dasharray', function(d) { var w = 2 * Math.PI * d.radius * d.radius / 100; return w + ',' + (2 * Math.PI * 100 - w); })
+			.attr('stroke', successColor)
+			.attr('stroke-width', function(d) { return (d.radius >= 100 ? 0 : 3); })
+			.attr('fill', function(d) { return (d.radius >= 100 ? successColor : 'black'); })
 		moveCircle.attr("r", function(d) { return d.radius; })
 	}
 }
