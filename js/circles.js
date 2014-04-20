@@ -192,7 +192,7 @@ function levelEnd(s, level) {
 		if (best[level] < s && best[level] != 0) {
 			html += '<p>New high score!</p>';
 		}
-		if (levels[parseInt(level) + 1] && custom[parseInt(level) + 1]) {
+		if (levels[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
 		} else {
 			html += "<p>Congratulations, you've beaten all the levels! Now you can build your own!</p>";
