@@ -32,11 +32,13 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		15: {title: 'Double Ben', avgSize: 150, sizeVar: 0, momentum: 30000, ballNum: 2, expandSpeed: .75},
 		16: {title: 'Invisible', avgSize: 2, sizeVar: 0, momentum: 4, ballNum: 20, expandSpeed: 1},
 		17: {title: 'Crossing an Intersection', avgSize: 20, sizeVar: 5, angle: function(o) { return Math.floor(4 * o) * Math.PI / 2; }, momentum: 400, ballNum: 15, expandSpeed: 1},
-		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1}}
-var custom = {}
+		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1}};
+var custom = {};
+var current;
 var successColor = 'lightblue';
 
 $(document).ready(function() {
+	$('#customButtons').hide();
 	gameW = $('#game').width(), gameH = $('#game').width();
 	if (window.localStorage['circleCustom']) {
 		custom = JSON.parse(window.localStorage['circleCustom'])
@@ -72,7 +74,7 @@ function init(level) {
 	var params = levels[level]
 	if (!params) {
 		params = custom[level]
-		$('#delete').show()
+		$('#customButtons').show()
 		$('#delete').unbind('click');
 		$('#delete').click(function() {
 			delete custom[level];
@@ -82,13 +84,14 @@ function init(level) {
 				window.localStorage[d] = JSON.stringify(sto);
 			})
 			renumberCustom();
-			$('#delete').hide();
+			$('#customButtons').hide();
 			var a = Object.keys(levels).concat(Object.keys(custom))
 			init(a[a.length - 1]);
 		})
 	}
 
 	$('#title').html('Level ' + level + ' - ' + params.title)
+	$('#lastScore').html('0');
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (!best[level]) {
 		best[level] = 0
@@ -96,6 +99,12 @@ function init(level) {
 	}
 	initLevels(Object.keys(levels).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
 	$('#best').html(best[level])
+	
+	if (Object.keys(custom).indexOf(level.toString()) != -1) {
+		current = params;
+	} else {
+		current = null;
+	}
 	
 	var moveDif = 50
 	var color = d3.scale.category10();
@@ -310,4 +319,20 @@ function renumberCustom() {
 	custom = temp;
 	window.localStorage['circleCustom'] = JSON.stringify(custom);
 	window.localStorage['bestCircleScores'] = JSON.stringify(bestTemp);
+}
+
+function submit() {
+	if (current) {
+		var m = 'Brian - Check out this new level.%0A%0A%0A%0ALeave the text below, it describes your level.%0A' + JSON.stringify(current)
+		sendGmail({to: 'brian@theconnman.com', subject: 'New Circles Level', message: m})
+	}
+}
+
+function sendGmail(opts){
+    var str = 'http://mail.google.com/mail/?view=cm&fs=1'+
+	    '&to=' + opts.to +
+	    '&su=' + opts.subject +
+	    '&body=' + opts.message +
+	    '&ui=1';
+    window.open(str, '_blank');
 }
