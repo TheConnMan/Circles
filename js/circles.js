@@ -30,9 +30,8 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		14: {title: 'Revenge of Slow Mo', avgSize: 20, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: .25},
 		15: {title: 'Double Ben', avgSize: 150, sizeVar: 0, momentum: 30000, ballNum: 2, expandSpeed: .75},
-		16: {title: 'Invisible', avgSize: 1, sizeVar: 0, momentum: 1, ballNum: 20, expandSpeed: 1},
-		17: {title: 'Crossing an Intersection', avgSize: 20, sizeVar: 5, angle: function(o) { return Math.floor(4 * o) * Math.PI / 2; }, momentum: 400, ballNum: 15, expandSpeed: 1},
-		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1}}
+		16: {title: 'Crossing an Intersection', avgSize: 20, sizeVar: 5, angle: function(o) { return Math.floor(4 * o) * Math.PI / 2; }, momentum: 400, ballNum: 15, expandSpeed: 1},
+		17: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1}}
 var custom = {}
 var successColor = 'lightblue';
 
