@@ -55,6 +55,9 @@ $(document).ready(function() {
 		renumberCustom()
 		var a = Object.keys(JSON.parse(window.localStorage['bestCircleScores']))
 		init(a[a.length - 1])
+		if (a.length >= 10) {
+			$('#custom').show();
+		}
 	}
 	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 })
@@ -85,7 +88,7 @@ function init(level) {
 		})
 	}
 
-	$('#title').html(params.title)
+	$('#title').html('Level ' + level + ' - ' + params.title)
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (!best[level]) {
 		best[level] = 0
@@ -196,9 +199,9 @@ function init(level) {
 }
 
 function levelEnd(s, level) {
-	var html;
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (pass(s)) {
+		var html;
 		html = '<h1>You Completed Level ' + level + '</h1>';
 		html += '<p>Your score was ' + s + '.</p>';
 		if (best[level] < s && best[level] != 0) {
@@ -206,29 +209,29 @@ function levelEnd(s, level) {
 		}
 		if (levels[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
-		} else {
+		}
+		if (level == 9) {
 			html += "<p>Congratulations, you've beaten all the levels! Now you can build your own!</p>";
 			$('#custom').show();
 			html += '<button class="close" onclick="window.location.href=\'#custom\'">Build My Own</button>';
 		}
 		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
+		$('#modalContent').html(html);
+		$('#levelEnd').reveal({
+		     animation: 'fadeAndPop',
+		     animationspeed: 300,
+		     closeonbackgroundclick: false,
+		     dismissmodalclass: 'close'
+		});
 	} else {
-		html = '<h1>You Failed Level ' + level + '</h1>';
-		html += '<p>Your score was ' + s + '.</p>';
-		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
+		init(level);
+		$('#lastScore').html(s);
 	}
 	if (best[level] < s) {
 		best[level] = s
 		window.localStorage['bestCircleScores'] = JSON.stringify(best)
 		$('#best').html(s)
 	}
-	$('#modalContent').html(html);
-	$('#levelEnd').reveal({
-	     animation: 'fadeAndPop',
-	     animationspeed: 300,
-	     closeonbackgroundclick: false,
-	     dismissmodalclass: 'close'
-	});
 }
 
 function initLevels(all, open, cur) {
