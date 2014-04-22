@@ -20,7 +20,7 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
 		4: {title: 'Slow Mo', avgSize: 25, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: .25},
 		5: {title: 'Light Speed', avgSize: 15, sizeVar: 5, momentum: 600, ballNum: 10, expandSpeed: 3},
-		6: {title: 'Atoms', avgSize: 5, sizeVar: 0, momentum: 25, ballNum: 30, expandSpeed: 1},
+		6: {title: 'Atoms', avgSize: 5, sizeVar: 0, momentum: 25, ballNum: 25, expandSpeed: 1.5},
 		7: {title: 'Big Ben', avgSize: 200, sizeVar: 0, momentum: 50000, ballNum: 1, expandSpeed: 1},
 		8: {title: 'Zoom Zoom', avgSize: 10, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: 2},
 		9: {title: 'Conservation of Momentum', r: function(o) { return 30 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o) / 2); }, momentum: 300, ballNum: 10, expandSpeed: 1},
