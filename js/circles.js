@@ -318,16 +318,19 @@ function build() {
 	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
 	var t = $('#buildTitle').val(), n = parseInt($('#buildNum').val()),
 		size = parseInt($('#buildSize').val()), v = $('#buildVariance').val() * size,
-		speed = parseFloat($('#buildSpeed').val()), e = $('#buildExpansion').val(),
+		speed = parseFloat($('#buildSpeed').val()), e = parseFloat($('#buildExpansion').val()),
 		interval = parseInt($('#buildInterval').val()), period = parseInt($('#buildPeriod').val()),
 		angle = parseInt($('#buildAngle').val());
 	if (t && n) {
-		var obj = {title: t, momentum: size * size * speed / 5, ballNum: n, expandSpeed: e, randAngleInt: interval, angle: function(o) { return Math.floor(angle * o) * 2 * Math.PI / angle; }};
+		var obj = {title: t, momentum: size * size * speed / 5, ballNum: n, expandSpeed: e, randAngleInt: interval};
 		if (period) {
 			obj.r = function(o) { return size + v * Math.cos(2 * Math.PI * (new Date() / period + o)); };
 		} else {
 			obj.avgSize = size;
 			obj.sizeVar = v;
+		}
+		if (angle) {
+			obj.angle = function(o) { return Math.floor(angle * o) * 2 * Math.PI / angle; };
 		}
 		custom[num] = obj;
 		window.localStorage['circleCustom'] = JSON.stringify(custom);
