@@ -2,7 +2,7 @@
  * OPTIONS
  * Required
  * title - Title of the level
- * momentum - Total momentum of each circle
+ * momentum - Total momentum of each circle, can be function
  * ballNum - Number of circles
  * expandSpeed - Expansion speed of the user's circle
  * 
@@ -30,9 +30,12 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		14: {title: 'Revenge of Slow Mo', avgSize: 20, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: .25},
 		15: {title: 'Double Ben', avgSize: 150, sizeVar: 0, momentum: 30000, ballNum: 2, expandSpeed: .75},
-		16: {title: 'Invisible', avgSize: 2, sizeVar: 0, momentum: 4, ballNum: 20, expandSpeed: 1},
+		16: {title: 'Bumbble Bees', avgSize: 7.5, sizeVar: 0, randAngleInt: 250, momentum: 40, ballNum: 20, expandSpeed: 1},
 		17: {title: 'Crossing an Intersection', avgSize: 20, sizeVar: 5, angle: function(o) { return Math.floor(4 * o) * Math.PI / 2; }, momentum: 400, ballNum: 15, expandSpeed: 1},
-		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1}};
+		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1},
+		19: {title: 'Newton\'s Folly', avgSize: 20, sizeVar: 5, momentum: function(o) { return 400 + 300 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 15, expandSpeed: 1},
+		20: {title: 'Step Review', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
+		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1}};
 var custom = {};
 var current;
 var successColor = 'lightblue';
@@ -160,6 +163,7 @@ function init(level) {
 	function redraw() {
 		nodes.forEach(function(d) {
 			var r = ($.isFunction(d.radius) ? d.radius(d.o) : d.radius)
+			var m = ($.isFunction(d.m) ? d.m(d.o) : d.m)
 			if ((d.y >= gameH - r || d.y <= r) && (d.c - d.dy) >= moveDif) {
 				d.r = 2 * Math.PI - d.r;
 				d.dy = d.c
@@ -168,11 +172,11 @@ function init(level) {
 				d.r = (Math.PI - d.r) % (2 * Math.PI)
 				d.dx = d.c
 			}
-			d.x += d.m / (r * r) * Math.cos(d.r);
-			d.y += d.m / (r * r) * Math.sin(d.r);
+			d.x += m / (r * r) * Math.cos(d.r);
+			d.y += m / (r * r) * Math.sin(d.r);
 			if (d.int && new Date().getTime() > d.lastChange + d.int) {
 				d.r = 2 * Math.random() * Math.PI;
-				d.lastChange = new Date().getTime()
+				d.lastChange = new Date().getTime();
 			}
 			d.c++
 		})
@@ -246,7 +250,7 @@ function levelEnd(s, level) {
 function initLevels(all, open, cur) {
 	d3.select("#levels").html('')
 	
-	var w = 300, h = $('#header').height(), perRow = 10, rw = w / perRow, pad = 2;
+	var w = 350, h = $('#header').height(), perRow = 12, rw = w / perRow, pad = 2;
 	var svg = d3.select("#levels").append("svg:svg")
 		.attr("width", w).attr("height", h).attr("id", "levelSvg");
 	
