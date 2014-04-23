@@ -182,7 +182,7 @@ function init(level) {
 	
 	function expand() {
 		moveNode.forEach(function(d) {
-			d.radius += params.expandSpeed / 5
+			d.radius += params.expandSpeed / 5;
 			var collide = false
 			nodes.forEach(function(n) {
 				if (($.isFunction(n.radius) ? n.radius(n.o) : n.radius) + d.radius >= Math.sqrt(Math.pow(d.x - n.x, 2) + Math.pow(d.y - n.y, 2))) {
@@ -285,9 +285,20 @@ function pass(r) {
 
 function build() {
 	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
-	var t = $('#buildTitle').val(), n = parseInt($('#buildNum').val()), size = parseInt($('#buildSize').val()), v = $('#buildVariance').val() * size, speed = parseFloat($('#buildSpeed').val()), e = $('#buildExpansion').val();
+	var t = $('#buildTitle').val(), n = parseInt($('#buildNum').val()),
+		size = parseInt($('#buildSize').val()), v = $('#buildVariance').val() * size,
+		speed = parseFloat($('#buildSpeed').val()), e = $('#buildExpansion').val(),
+		interval = parseInt($('#buildInterval').val()), period = parseInt($('#buildPeriod').val()),
+		angle = parseInt($('#buildAngle').val());
 	if (t && n) {
-		custom[num] = {title: t, avgSize: size, sizeVar: v, momentum: size * size * speed / 5, ballNum: n, expandSpeed: e};
+		var obj = {title: t, momentum: size * size * speed / 5, ballNum: n, expandSpeed: e, randAngleInt: interval, angle: function(o) { return Math.floor(angle * o) * 2 * Math.PI / angle; }};
+		if (period) {
+			obj.r = function(o) { return size + v * Math.cos(2 * Math.PI * (new Date() / period + o)); };
+		} else {
+			obj.avgSize = size;
+			obj.sizeVar = v;
+		}
+		custom[num] = obj;
 		window.localStorage['circleCustom'] = JSON.stringify(custom);
 		init(num)
 	} else {
