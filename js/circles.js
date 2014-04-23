@@ -60,10 +60,11 @@ $(document).ready(function() {
 		});
 	} else {
 		renumberCustom()
-		var a = Object.keys(JSON.parse(window.localStorage['bestCircleScores']))
-		init(a[a.length - 1])
-		if (a.length >= 10) {
-			$('#custom').show();
+		var a = getFinishedLevels();
+		if (a.length != Object.keys(levels)) {
+			init(parseInt(a[a.length - 1]) + 1);
+		} else {
+			init(a[a.length - 1]);
 		}
 	}
 	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
@@ -90,8 +91,12 @@ function init(level) {
 			})
 			renumberCustom();
 			$('#customButtons').hide();
-			var a = Object.keys(levels).concat(Object.keys(custom))
-			init(a[a.length - 1]);
+			var a = getFinishedLevels();
+			if (a.length != Object.keys(levels)) {
+				init(parseInt(a[a.length - 1]) + 1);
+			} else {
+				init(a[a.length - 1]);
+			}
 		})
 	}
 
@@ -288,6 +293,18 @@ function initLevels(all, open, cur) {
 			init(d.level)
 		}
 	})
+}
+
+function getFinishedLevels() {
+	var scores = JSON.parse(window.localStorage['bestCircleScores']);
+	var levelKeys = Object.keys(levels);
+	var finished = []
+	levelKeys.forEach(function(d) {
+		if (pass(scores[d])) {
+			finished.push(d)
+		}
+	})
+	return finished;
 }
 
 function pass(r) {
