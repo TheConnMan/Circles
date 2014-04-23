@@ -41,6 +41,10 @@ p {
 	width: 600px;
 }
 
+#contributor {
+	float: right;
+}
+
 #custom {
 	display: none;
 }

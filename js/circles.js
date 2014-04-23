@@ -13,6 +13,7 @@
  * Optional
  * angle - Starting angle of each node, can be a function
  * randAngleInt - Interval in milliseconds when each circle gets a new, random angle
+ * contributor - Contributor of the level
  */
 
 var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
@@ -35,7 +36,8 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1},
 		19: {title: 'Newton\'s Folly', avgSize: 20, sizeVar: 5, momentum: function(o) { return 400 + 300 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 15, expandSpeed: 1},
 		20: {title: 'Step Review', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
-		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1}};
+		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
+		22: {title: 'Nope', avgSize: 10, sizeVar: 7.5, momentum: 300, ballNum: 2, expandSpeed: .1, contributor: 'Matt' }};
 var custom = {};
 var current;
 var successColor = 'lightblue';
@@ -95,6 +97,11 @@ function init(level) {
 
 	$('#title').html('Level ' + level + ' - ' + params.title)
 	$('#lastScore').html('0');
+	if (params.contributor) {
+		$('#contributor').html('Contributed by ' + params.contributor);
+	} else {
+		$('#contributor').html('');
+	}
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (!best[level]) {
 		best[level] = 0
