@@ -54,7 +54,7 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
 		22: {title: 'Nope', avgSize: 10, sizeVar: 7.5, momentum: 300, ballNum: 2, expandSpeed: .25, contributor: 'Matt' },
 		23: {title: 'Woah There', avgSize: 20, sizeVar: 5, momentum: 350, ballNum: 15, expandSpeed: function(d) { return 1 + Math.cos(2 * Math.PI * (new Date() / 1000 + d.o)); }},
-		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .005 * (105 - d.radius); }},
+		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .0075 * (105 - d.radius); }},
 		25: {title: 'Ghosts', avgSize: 15, sizeVar: 5, momentum: 200, ballNum: 15, expandSpeed: 1, physics: ghostPhysics},
 		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
 var custom = {};
@@ -256,13 +256,14 @@ function levelEnd(s, level) {
 		}
 		if (levels[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
+		} else {
+			html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
 		}
 		if (level == 9) {
-			html += "<p>Congratulations, you've beaten all the levels! Now you can build your own!</p>";
+			html += "<p>Congratulations, you've beaten 10 of the levels! Now you can build your own!</p>";
 			$('#custom').show();
 			html += '<button class="close" onclick="window.location.href=\'#custom\'">Build My Own</button>';
 		}
-		html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
 		$('#modalContent').html(html);
 		$('#levelEnd').reveal({
 		     animation: 'fadeAndPop',
