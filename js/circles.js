@@ -52,7 +52,7 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		19: {title: 'Newton\'s Folly', avgSize: 20, sizeVar: 5, momentum: function(o) { return 400 + 300 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 15, expandSpeed: 1},
 		20: {title: 'Step Review', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
 		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
-		22: {title: 'Nope', avgSize: 10, sizeVar: 7.5, momentum: 300, ballNum: 2, expandSpeed: .1, contributor: 'Matt' },
+		22: {title: 'Nope', avgSize: 10, sizeVar: 7.5, momentum: 300, ballNum: 2, expandSpeed: .25, contributor: 'Matt' },
 		23: {title: 'Woah There', avgSize: 20, sizeVar: 5, momentum: 350, ballNum: 15, expandSpeed: function(d) { return 1 + Math.cos(2 * Math.PI * (new Date() / 1000 + d.o)); }},
 		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .005 * (105 - d.radius); }},
 		25: {title: 'Ghosts', avgSize: 15, sizeVar: 5, momentum: 200, ballNum: 15, expandSpeed: 1, physics: ghostPhysics},
@@ -80,7 +80,7 @@ $(document).ready(function() {
 	} else {
 		renumberCustom()
 		var a = getFinishedLevels();
-		if (a.length != Object.keys(levels) && parseInt(a[a.length - 1]) < a.length) {
+		if (a.length != Object.keys(levels) && parseInt(a[a.length - 1]) <= a.length) {\
 			init(parseInt(a[a.length - 1]) + 1);
 		} else {
 			init(a[a.length - 1]);
