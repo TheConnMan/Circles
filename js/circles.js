@@ -16,6 +16,21 @@
  * contributor - Contributor of the level
  */
 
+var defaultPhysics = {
+	dx: function(d, r) { return r; },
+	dy: function(d, r) { return r; },
+	x: function(d, w, h) { return d.x; },
+	y: function(d, w, h) { return d.y; },
+	rx: function(d, w, h) { return (Math.PI - d.r) % (2 * Math.PI); },
+	ry: function(d, w, h) { return 2 * Math.PI - d.r; }
+}, ghostPhysics = {
+	dx: function(d, r) { return 0; },
+	dy: function(d, r) { return 0; },
+	x: function(d, w, h) { return (d.x + w) % w; },
+	y: function(d, w, h) { return (d.y + h) % h; },
+	rx: function(d, w, h) { return d.r; },
+	ry: function(d, w, h) { return d.r; }
+};
 var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
 		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
 		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
@@ -39,7 +54,9 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		21: {title: 'I Feel Like I\'m Taking Crazy Pills', r: function(o) { return 10 + 15 * (Math.floor(new Date() / 1000 + o * 5) % 5); }, momentum: 300, ballNum: 15, expandSpeed: 1},
 		22: {title: 'Nope', avgSize: 10, sizeVar: 7.5, momentum: 300, ballNum: 2, expandSpeed: .1, contributor: 'Matt' },
 		23: {title: 'Woah There', avgSize: 20, sizeVar: 5, momentum: 350, ballNum: 15, expandSpeed: function(d) { return 1 + Math.cos(2 * Math.PI * (new Date() / 1000 + d.o)); }},
-		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .005 * (105 - d.radius); }}};
+		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .005 * (105 - d.radius); }},
+		25: {title: 'Ghosts', avgSize: 15, sizeVar: 5, momentum: 200, ballNum: 15, expandSpeed: 1, physics: ghostPhysics},
+		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
 var custom = {};
 var current;
 var successColor = 'lightblue';
@@ -126,7 +143,6 @@ function init(level) {
 		current = null;
 	}
 	
-	var moveDif = 50
 	var color = d3.scale.category10();
 	var nodes = d3.range(params.ballNum).map(function() {
 		var r;
@@ -146,7 +162,7 @@ function init(level) {
 			r: (params.angle ? ($.isFunction(params.angle) ? params.angle(o) : params.angle) : Math.random() * 2 * Math.PI),
 			int: (params.randAngleInt ? params.randAngleInt : 0),
 			lastChange: (params.randAngleInt ? new Date().getTime() : 0),
-			c: moveDif, dx: 0, dy: 0, o: o};
+			dx: 0, dy: 0, o: o, physics: params.physics};
 	})
 	var moveNode;
 	var moveCircle;
@@ -179,15 +195,16 @@ function init(level) {
 			
 	function redraw() {
 		nodes.forEach(function(d) {
-			var r = ($.isFunction(d.radius) ? d.radius(d.o) : d.radius)
-			var m = ($.isFunction(d.m) ? d.m(d.o) : d.m)
-			if ((d.y >= gameH - r || d.y <= r) && (d.c - d.dy) >= moveDif) {
-				d.r = 2 * Math.PI - d.r;
-				d.dy = d.c
+			var r = ($.isFunction(d.radius) ? d.radius(d.o) : d.radius);
+			var m = ($.isFunction(d.m) ? d.m(d.o) : d.m);
+			var physics = d.physics ? d.physics : defaultPhysics;
+			if (d.y >= gameH - physics.dy(d, r) || d.y <= physics.dy(d, r)) {
+				d.y = physics.y(d, gameW, gameH);
+				d.r = physics.ry(d, gameW, gameH);
 			}
-			if ((d.x >= gameW - r || d.x <= r) && (d.c - d.dx) >= moveDif) {
-				d.r = (Math.PI - d.r) % (2 * Math.PI)
-				d.dx = d.c
+			if (d.x >= gameW - physics.dx(d, r) || d.x <= physics.dx(d, r)) {
+				d.x = physics.x(d, gameW, gameH);
+				d.r = physics.rx(d, gameW, gameH);
 			}
 			d.x += m / (r * r) * Math.cos(d.r);
 			d.y += m / (r * r) * Math.sin(d.r);
@@ -195,7 +212,6 @@ function init(level) {
 				d.r = 2 * Math.random() * Math.PI;
 				d.lastChange = new Date().getTime();
 			}
-			d.c++
 		})
 		svg.selectAll(".circle").attr("r", function(d) { return ($.isFunction(d.radius) ? d.radius(d.o) : d.radius); })
 		circles.attr("transform", function(d) { return 'translate(' + d.x + ', ' + d.y + ')'; })
