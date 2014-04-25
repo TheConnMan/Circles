@@ -56,7 +56,10 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		23: {title: 'Woah There', avgSize: 20, sizeVar: 5, momentum: 350, ballNum: 15, expandSpeed: function(d) { return 1 + Math.cos(2 * Math.PI * (new Date() / 1000 + d.o)); }},
 		24: {title: 'So Close', avgSize: 20, sizeVar: 5, momentum: 200, ballNum: 10, expandSpeed: function(d) { return d.radius > 100 ? .5 : .0075 * (105 - d.radius); }},
 		25: {title: 'Ghosts', avgSize: 15, sizeVar: 5, momentum: 200, ballNum: 15, expandSpeed: 1, physics: ghostPhysics},
-		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
+		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
+		27: {title: 'Inchworms', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1},
+		28: {title: 'Teleporting Inchworms', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
+		29: {title: 'Non-Conformist Teleporting Inchworms', avgSize: 15, sizeVar: 5, randAngleInt: 1000, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
 var custom = {};
 var current;
 var successColor = 'lightblue';
