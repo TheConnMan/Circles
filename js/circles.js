@@ -22,14 +22,18 @@ var defaultPhysics = {
 	x: function(d, w, h) { return d.x; },
 	y: function(d, w, h) { return d.y; },
 	rx: function(d, w, h) { return (Math.PI - d.r) % (2 * Math.PI); },
-	ry: function(d, w, h) { return 2 * Math.PI - d.r; }
+	ry: function(d, w, h) { return 2 * Math.PI - d.r; },
+	xx: function(d, m, r) { return m / (r * r) * Math.cos(d.r); },
+	yy: function(d, m, r) { return m / (r * r) * Math.sin(d.r); }
 }, ghostPhysics = {
 	dx: function(d, r) { return 0; },
 	dy: function(d, r) { return 0; },
 	x: function(d, w, h) { return (d.x + w) % w; },
 	y: function(d, w, h) { return (d.y + h) % h; },
 	rx: function(d, w, h) { return d.r; },
-	ry: function(d, w, h) { return d.r; }
+	ry: function(d, w, h) { return d.r; },
+	xx: function(d, m, r) { return m / (r * r) * Math.cos(d.r); },
+	yy: function(d, m, r) { return m / (r * r) * Math.sin(d.r); }
 };
 var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
 		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
@@ -58,11 +62,9 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		25: {title: 'Ghosts', avgSize: 15, sizeVar: 5, momentum: 200, ballNum: 15, expandSpeed: 1, physics: ghostPhysics},
 		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
 		27: {title: 'Inchworms', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1},
-		28: {title: 'Teleporting Inchworms', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
-		29: {title: 'Non-Conformist Teleporting Inchworms', avgSize: 15, sizeVar: 5, randAngleInt: 1000, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
-var custom = {};
-var current;
-var successColor = 'lightblue';
+		28: {title: 'Inchworm Ghosts', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
+		29: {title: 'Non-Conformist Inchworm Ghosts', avgSize: 15, sizeVar: 5, randAngleInt: 1000, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
+var custom = {}, current, successColor = 'lightblue', moveInterval, defaultInterval;
 
 $(document).ready(function() {
 	$('#customButtons').hide();
@@ -92,6 +94,8 @@ $(document).ready(function() {
 			$('#custom').show();
 		}
 	}
+	$("#pop")[0].load();
+	$("#tada")[0].load();
 	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 })
 
@@ -169,7 +173,6 @@ function init(level) {
 	})
 	var moveNode;
 	var moveCircle;
-	var moveInterval;
 	var moveBool = false
 	
 	circles = svg.selectAll(".circle")
@@ -194,7 +197,7 @@ function init(level) {
 		}
 	})
 	
-	var defaultInterval = setInterval(redraw, 1)
+	defaultInterval = setInterval(redraw, 1)
 			
 	function redraw() {
 		nodes.forEach(function(d) {
@@ -209,8 +212,8 @@ function init(level) {
 				d.x = physics.x(d, gameW, gameH);
 				d.r = physics.rx(d, gameW, gameH);
 			}
-			d.x += m / (r * r) * Math.cos(d.r);
-			d.y += m / (r * r) * Math.sin(d.r);
+			d.x += physics.xx(d, m, r);
+			d.y += physics.yy(d, m, r);
 			if (d.int && new Date().getTime() > d.lastChange + d.int) {
 				d.r = 2 * Math.random() * Math.PI;
 				d.lastChange = new Date().getTime();
@@ -234,9 +237,9 @@ function init(level) {
 				collide = true
 			}
 			if (collide) {
-				clearInterval(defaultInterval)
-				clearInterval(moveInterval)
-				levelEnd(Math.floor(d.radius), level)
+				clearInterval(defaultInterval);
+				clearInterval(moveInterval);
+				levelEnd(Math.floor(d.radius), level);
 			}
 		})
 		
@@ -251,6 +254,7 @@ function init(level) {
 function levelEnd(s, level) {
 	var best = JSON.parse(window.localStorage['bestCircleScores'])
 	if (pass(s)) {
+		$("#tada")[0].play();
 		var html;
 		html = '<h1>You Completed Level ' + level + '</h1>';
 		html += '<p>Your score was ' + s + '.</p>';
@@ -274,7 +278,8 @@ function levelEnd(s, level) {
 		     closeonbackgroundclick: false,
 		     dismissmodalclass: 'close'
 		});
-	} else {
+	} else { 
+		$("#pop")[0].play();
 		init(level);
 		$('#lastScore').html(s);
 	}
@@ -288,7 +293,7 @@ function levelEnd(s, level) {
 function initLevels(all, open, cur) {
 	d3.select("#levels").html('')
 	
-	var w = 350, h = $('#header').height(), perRow = 12, rw = w / perRow, pad = 2;
+	var w = 380, perRow = 14, rw = w / perRow, pad = 2, h = rw * (1 + Math.floor(all.length / perRow));
 	var svg = d3.select("#levels").append("svg:svg")
 		.attr("width", w).attr("height", h).attr("id", "levelSvg");
 	
@@ -316,7 +321,13 @@ function initLevels(all, open, cur) {
 	
 	root.on('click', function(d) {
 		if (d.open) {
-			init(d.level)
+			if (defaultInterval) {
+				clearInterval(defaultInterval);
+			}
+			if (moveInterval) {
+				clearInterval(moveInterval);
+			}
+			init(d.level);
 		}
 	})
 }
