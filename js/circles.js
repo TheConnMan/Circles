@@ -96,6 +96,7 @@ $(document).ready(function() {
 	}
 	$("#pop")[0].load();
 	$("#tada")[0].load();
+	$("#tada")[0].volume = .1;
 	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 })
 
