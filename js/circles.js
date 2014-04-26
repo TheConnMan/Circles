@@ -106,6 +106,10 @@ function init(level) {
 	var svg = d3.select("#game").append("svg:svg")
 				.attr("width", gameW).attr("height", gameH).attr("id", "svg");
 
+	svg.on('contextmenu', function() {
+		d3.event.preventDefault();
+	})
+	
 	var params = levels[level]
 	if (!params) {
 		params = custom[level]
