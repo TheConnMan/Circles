@@ -85,7 +85,7 @@ $(document).ready(function() {
 	} else {
 		renumberCustom()
 		var a = getFinishedLevels();
-		if (a.length != Object.keys(levels) && parseInt(a[a.length - 1]) <= a.length) {
+		if (a.length != Object.keys(levels).length && parseInt(a[a.length - 1]) <= a.length) {
 			init(parseInt(a[a.length - 1]) + 1);
 		} else {
 			init(a[a.length - 1]);
