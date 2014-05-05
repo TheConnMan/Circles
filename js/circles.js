@@ -50,7 +50,7 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		13: {title: 'What Is Happening', r: function(o) { return 20 + 10 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, randAngleInt: 1000, momentum: 300, ballNum: 20, expandSpeed: 1},
 		14: {title: 'Revenge of Slow Mo', avgSize: 20, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: .25},
 		15: {title: 'Double Ben', avgSize: 150, sizeVar: 0, momentum: 30000, ballNum: 2, expandSpeed: .75},
-		16: {title: 'Bumbble Bees', avgSize: 7.5, sizeVar: 0, randAngleInt: 250, momentum: 40, ballNum: 20, expandSpeed: 1},
+		16: {title: 'Bumble Bees', avgSize: 7.5, sizeVar: 0, randAngleInt: 250, momentum: 40, ballNum: 20, expandSpeed: 1},
 		17: {title: 'Crossing the Intersection', avgSize: 20, sizeVar: 5, angle: function(o) { return Math.floor(4 * o) * Math.PI / 2; }, momentum: 400, ballNum: 15, expandSpeed: 1},
 		18: {title: 'Gotta Be Quick', r: function(o) { return 20 + 15 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, momentum: 400, ballNum: 5, expandSpeed: 1},
 		19: {title: 'Newton\'s Folly', avgSize: 20, sizeVar: 5, momentum: function(o) { return 400 + 300 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 15, expandSpeed: 1},
