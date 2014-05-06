@@ -298,7 +298,7 @@ function levelEnd(s, level) {
 function initLevels(all, open, cur) {
 	d3.select("#levels").html('')
 	
-	var w = 380, perRow = 14, rw = w / perRow, pad = 2, h = rw * (1 + Math.floor(all.length / perRow));
+	var w = 370, perRow = 14, rw = w / perRow, pad = 2, h = rw * (1 + Math.floor(all.length / perRow));
 	var svg = d3.select("#levels").append("svg:svg")
 		.attr("width", w).attr("height", h).attr("id", "levelSvg");
 	
