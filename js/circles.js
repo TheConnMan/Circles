@@ -102,10 +102,13 @@ $(document).ready(function() {
 
 function init(level) {
 	
-	d3.select("#game").html('')
+	d3.select("#game").selectAll('svg').remove();
 
 	var svg = d3.select("#game").append("svg:svg")
 				.attr("width", gameW).attr("height", gameH).attr("id", "svg");
+	
+	svg.append('rect').attr('width', gameW - 200).attr('height', gameH - 200)
+		.style('stroke-width', .5).style('fill', 'white').attr('stroke', 'gray').attr('transform', 'translate(100,100)')
 
 	svg.on('contextmenu', function() {
 		d3.event.preventDefault();
