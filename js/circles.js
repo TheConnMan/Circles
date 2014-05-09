@@ -101,7 +101,6 @@ $(document).ready(function() {
 })
 
 function init(level) {
-	
 	d3.select("#game").selectAll('svg').remove();
 
 	var svg = d3.select("#game").append("svg:svg")
@@ -120,6 +119,10 @@ function init(level) {
 		$('#customButtons').show()
 		$('#delete').unbind('click');
 		$('#delete').click(function() {
+			clearInterval(defaultInterval);
+			if (moveInterval) {
+				clearInterval(moveInterval);
+			}
 			delete custom[level];
 			['bestCircleScores', 'circleCustom'].forEach(function(d) {
 				var sto = JSON.parse(window.localStorage[d]);
@@ -129,7 +132,7 @@ function init(level) {
 			renumberCustom();
 			$('#customButtons').hide();
 			var a = getFinishedLevels();
-			if (a.length != Object.keys(levels)) {
+			if (a.length != Object.keys(levels).length) {
 				init(parseInt(a[a.length - 1]) + 1);
 			} else {
 				init(a[a.length - 1]);
@@ -269,6 +272,10 @@ function levelEnd(s, level) {
 		if (best[level] < s && best[level] != 0) {
 			html += '<p>New high score!</p>';
 		}
+		if (level == Object.keys(levels).length) {
+			html += '<h1>Congratulations! You beat all the levels!</h1><p>You must have been here a while...</p>';
+			html += '<p>Try building some of your own levels or shoot me an email telling me your favorite level at <a href="mailto:brian@theconnman.com">brian@theconnman.com</a>!</p>';
+		}
 		if (levels[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
 		} else {
@@ -389,6 +396,27 @@ function build() {
 		     dismissmodalclass: 'close'
 		});
 	}
+}
+
+function randomLevel() {
+	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
+	var t = 'Random Level', size = Math.floor(Math.random() * 30) + 5, v = size * Math.random() * .5,
+		speed = Math.random() * 14 + 1, e = Math.random() < .5 ? Math.random() * 2 + .25 : 1,
+		interval = Math.random() < .1 ? Math.random() * 1000 + 500 : 0, period = Math.random() * 4700 + 300;;
+	var obj = {title: t, momentum: size * size * speed / 5, ballNum: Math.floor(Math.random() * 15 + 5), expandSpeed: e, randAngleInt: interval};
+	if (Math.random() < .1) {
+		obj.r = function(o) { return size + v * Math.cos(2 * Math.PI * (new Date() / period + o)); };
+	} else {
+		obj.avgSize = size;
+		obj.sizeVar = v;
+	}
+	if (Math.random() < .1) {
+		var angle = Math.floor(Math.random() * 9) + 1;
+		obj.angle = function(o) { return Math.floor(angle * o) * 2 * Math.PI / angle; };
+	}
+	custom[num] = obj;
+	window.localStorage['circleCustom'] = JSON.stringify(custom);
+	init(num)
 }
 
 function renumberCustom() {
