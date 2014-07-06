@@ -1,7 +1,7 @@
 Circles
 =======
 
-### Play at [theconnman.github.io/Circles](https://theconnman.github.io/Circles/) ###
+### Play at [theconnman.github.io/Circles](http://theconnman.com/Circles/) ###
 
 ###GOAL:###
 The goal of each level is to create as large of a bubble as possible without it touching the moving circles. Clicking on the game will create a small bubble which gets larger with a constant speed. The bubble stops growing when any other circle runs into it. To pass the level you need to reach a size of over 100. If you beat the first 10 levels you get to create custom levels of your own.
