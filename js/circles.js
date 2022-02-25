@@ -35,7 +35,8 @@ var defaultPhysics = {
 	xx: function(d, m, r) { return m / (r * r) * Math.cos(d.r); },
 	yy: function(d, m, r) { return m / (r * r) * Math.sin(d.r); }
 };
-var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
+var levels = {
+		1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: 1},
 		2: {title: 'Lemon Squeezy', avgSize: 15, sizeVar: 5, momentum: 100, ballNum: 15, expandSpeed: 1},
 		3: {title: 'Rapid Expansion', avgSize: 30, sizeVar: 5, momentum: 800, ballNum: 10, expandSpeed: 1},
 		4: {title: 'Slow Mo', avgSize: 25, sizeVar: 5, momentum: 100, ballNum: 10, expandSpeed: .25},
@@ -63,7 +64,11 @@ var levels = {1: {title: 'Easy Peasy', avgSize: 15, sizeVar: 5, momentum: 100, b
 		26: {title: 'Matrix', avgSize: 15, sizeVar: 5, momentum: 250, ballNum: 15, angle: Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
 		27: {title: 'Inchworms', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1},
 		28: {title: 'Inchworm Ghosts', avgSize: 15, sizeVar: 5, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
-		29: {title: 'Non-Conformist Inchworm Ghosts', avgSize: 15, sizeVar: 5, randAngleInt: 1000, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics}};
+		29: {title: 'Non-Conformist Inchworm Ghosts', avgSize: 15, sizeVar: 5, randAngleInt: 1000, momentum: function(o) { return 150 + 200 * Math.cos(2 * Math.PI * (new Date() / 1000 + o)); }, ballNum: 20, angle:3 *  Math.PI / 2, expandSpeed: 1, physics: ghostPhysics},
+		30: { title: "Impossible by Homie G", momentum: 5, ballNum: 50, expandSpeed: 3, randAngleInt: 5000, avgSize: 25, sizeVar: 0 },
+		31: { title: "Try Your Best by Jack W", momentum: 625, ballNum: 15, expandSpeed: 1, randAngleInt: 0, avgSize: 25, sizeVar: 0 },
+		32: { title: "Heck by Myla L", momentum: 320, ballNum: 40, expandSpeed: 0.5, randAngleInt: 2000, avgSize: 40, sizeVar: 10 }
+};
 var custom = {}, current, successColor = 'lightblue', moveInterval, defaultInterval;
 
 $(document).ready(function() {
