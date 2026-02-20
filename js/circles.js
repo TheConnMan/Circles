@@ -69,7 +69,7 @@ var levels = {
 		31: { title: "Try Your Best by Jack W", momentum: 625, ballNum: 15, expandSpeed: 1, randAngleInt: 0, avgSize: 25, sizeVar: 0 },
 		32: { title: "Heck by Myla L", momentum: 320, ballNum: 40, expandSpeed: 0.5, randAngleInt: 2000, avgSize: 40, sizeVar: 10 }
 };
-var custom = {}, current, successColor = 'lightblue', moveInterval, defaultInterval;
+var custom = {}, community = {}, current, successColor = 'lightblue', moveInterval, defaultInterval;
 
 $(document).ready(function() {
 	$('#customButtons').hide();
@@ -77,32 +77,34 @@ $(document).ready(function() {
 	if (window.localStorage['circleCustom']) {
 		custom = JSON.parse(window.localStorage['circleCustom'])
 	}
-	var sto = window.localStorage['bestCircleScores']
-	if (!sto || typeof(JSON.parse(sto)) != 'object' || !JSON.parse(sto)[1]) {
-		window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
-		init(1)
-		$('#levelEnd').reveal({
-		     animation: 'fadeAndPop',
-		     animationspeed: 300,
-		     closeonbackgroundclick: true,
-		     dismissmodalclass: 'close'
-		});
-	} else {
-		renumberCustom()
-		var a = getFinishedLevels();
-		if (a.length != Object.keys(levels).length && parseInt(a[a.length - 1]) <= a.length) {
-			init(parseInt(a[a.length - 1]) + 1);
+	loadCommunityLevels(function() {
+		var sto = window.localStorage['bestCircleScores']
+		if (!sto || typeof(JSON.parse(sto)) != 'object' || !JSON.parse(sto)[1]) {
+			window.localStorage['bestCircleScores'] = JSON.stringify({1: 0})
+			init(1)
+			$('#levelEnd').reveal({
+			     animation: 'fadeAndPop',
+			     animationspeed: 300,
+			     closeonbackgroundclick: true,
+			     dismissmodalclass: 'close'
+			});
 		} else {
-			init(a[a.length - 1]);
+			renumberCustom()
+			var a = getFinishedLevels();
+			if (a.length != Object.keys(levels).length && parseInt(a[a.length - 1]) <= a.length) {
+				init(parseInt(a[a.length - 1]) + 1);
+			} else {
+				init(a[a.length - 1]);
+			}
+			if (a.length >= 10) {
+				$('#custom').show();
+			}
 		}
-		if (a.length >= 10) {
-			$('#custom').show();
-		}
-	}
-	$("#pop")[0].load();
-	$("#tada")[0].load();
-	$("#tada")[0].volume = .1;
-	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+		$("#pop")[0].load();
+		$("#tada")[0].load();
+		$("#tada")[0].volume = .1;
+		!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+	});
 })
 
 function init(level) {
@@ -118,7 +120,11 @@ function init(level) {
 		d3.event.preventDefault();
 	})
 	
+	$('#customButtons').hide()
 	var params = levels[level]
+	if (!params) {
+		params = community[level]
+	}
 	if (!params) {
 		params = custom[level]
 		$('#customButtons').show()
@@ -157,12 +163,15 @@ function init(level) {
 		best[level] = 0
 		window.localStorage['bestCircleScores'] = JSON.stringify(best)
 	}
-	initLevels(Object.keys(levels).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
+	initLevels(Object.keys(levels).concat(Object.keys(community)).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
 	$('#best').html(best[level])
 	
 	if (Object.keys(custom).indexOf(level.toString()) != -1) {
 		current = params;
 	} else {
+		current = null;
+	}
+	if (Object.keys(community).indexOf(level.toString()) != -1) {
 		current = null;
 	}
 	
@@ -281,7 +290,7 @@ function levelEnd(s, level) {
 			html += '<h1>Congratulations! You beat all the levels!</h1><p>You must have been here a while...</p>';
 			html += '<p>Try building some of your own levels or shoot me an email telling me your favorite level at <a href="mailto:brian@theconnman.com">brian@theconnman.com</a>!</p>';
 		}
-		if (levels[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
+		if (levels[parseInt(level) + 1] || community[parseInt(level) + 1] || custom[parseInt(level) + 1]) {
 			html += '<button class="close" onclick="init(' + (parseInt(level) + 1) + ')">Next Level</button>';
 		} else {
 			html += '<button class="close" onclick="init(' + level + ')">Retry Level</button>';
@@ -369,7 +378,7 @@ function pass(r) {
 }
 
 function build() {
-	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
+	var num = Object.keys(levels).length + Object.keys(community).length + Object.keys(custom).length + 1;
 	var t = $('#buildTitle').val(), n = parseInt($('#buildNum').val()),
 		size = parseInt($('#buildSize').val()), v = $('#buildVariance').val() * size,
 		speed = parseFloat($('#buildSpeed').val()), e = parseFloat($('#buildExpansion').val()),
@@ -404,7 +413,7 @@ function build() {
 }
 
 function randomLevel() {
-	var num = Object.keys(levels).length + Object.keys(custom).length + 1;
+	var num = Object.keys(levels).length + Object.keys(community).length + Object.keys(custom).length + 1;
 	var t = 'Random Level', size = Math.floor(Math.random() * 30) + 5, v = size * Math.random() * .5,
 		speed = Math.random() * 14 + 1, e = Math.random() < .5 ? Math.random() * 2 + .25 : 1,
 		interval = Math.random() < .1 ? Math.random() * 1000 + 500 : 0, period = Math.random() * 4700 + 300;;
@@ -426,7 +435,7 @@ function randomLevel() {
 
 function renumberCustom() {
 	var levelKeys = Object.keys(levels)
-	var levelMax = levelKeys[levelKeys.length - 1]
+	var levelMax = parseInt(levelKeys[levelKeys.length - 1]) + Object.keys(community).length
 	var customKeys = Object.keys(custom)
 	var temp = {}
 	var best = JSON.parse(window.localStorage['bestCircleScores']);
@@ -455,4 +464,25 @@ function sendGmail(opts){
 	    '&body=' + opts.message +
 	    '&ui=1';
     window.open(str, '_blank');
+}
+
+function loadCommunityLevels(callback) {
+	$.getJSON('community-levels.json', function(data) {
+		if (data && data.length) {
+			var startNum = Object.keys(levels).length + 1;
+			data.forEach(function(level, i) {
+				if (isCleanTitle(level.title)) {
+					community[startNum + i] = level;
+				}
+			});
+		}
+	}).always(function() {
+		callback();
+	});
+}
+
+function isCleanTitle(title) {
+	if (!title) return false;
+	var blocked = /\b(fuck|shit|bitch|cunt|nigger|nigga|faggot|slut|whore|porn|cock|pussy)\b/i;
+	return !blocked.test(title);
 }
