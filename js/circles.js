@@ -151,7 +151,13 @@ function init(level) {
 		})
 	}
 
-	$('#title').html('Level ' + level + ' - ' + params.title)
+	var communityKeys = Object.keys(community);
+	var communityIndex = communityKeys.indexOf(level.toString());
+	if (communityIndex !== -1) {
+		$('#title').html('Community Level ' + (communityIndex + 1) + ' - ' + params.title);
+	} else {
+		$('#title').html('Level ' + level + ' - ' + params.title);
+	}
 	$('#lastScore').html('0');
 	if (params.contributor) {
 		$('#contributor').html('Contributed by ' + params.contributor);
@@ -163,7 +169,8 @@ function init(level) {
 		best[level] = 0
 		window.localStorage['bestCircleScores'] = JSON.stringify(best)
 	}
-	initLevels(Object.keys(levels).concat(Object.keys(community)).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
+	initLevels(Object.keys(levels).concat(Object.keys(custom)), Object.keys(JSON.parse(window.localStorage['bestCircleScores'])), level)
+	initCommunityLevels(level)
 	$('#best').html(best[level])
 	
 	if (Object.keys(custom).indexOf(level.toString()) != -1) {
@@ -359,6 +366,61 @@ function initLevels(all, open, cur) {
 			init(d.level);
 		}
 	})
+}
+
+function initCommunityLevels(cur) {
+	var communityKeys = Object.keys(community);
+	if (!communityKeys.length) {
+		$('#communitySection').hide();
+		return;
+	}
+	$('#communitySection').show();
+	d3.select("#communityLevels").html('');
+
+	var w = 370, perRow = 14, rw = w / perRow, pad = 2, h = rw * (1 + Math.floor(communityKeys.length / perRow));
+	var svg = d3.select("#communityLevels").append("svg:svg")
+		.attr("width", w).attr("height", h).attr("id", "communityLevelSvg");
+
+	var nodes = d3.range(communityKeys.length).map(function(d) {
+		var internalLevel = communityKeys[d];
+		return {
+			level: internalLevel,
+			displayNum: d + 1,
+			h: rw - 2 * pad,
+			w: rw - 2 * pad,
+			x: (d * rw) % w + pad,
+			y: Math.floor(d / perRow) * rw + pad
+		};
+	});
+
+	var root = svg.selectAll(".communityLevel")
+		.data(nodes).enter()
+		.append("g")
+		.attr("width", function(d) { return d.w; })
+		.attr("height", function(d) { return d.h; });
+
+	root.append("svg:rect")
+		.attr("class", "level communityLevel")
+		.attr("x", function(d) { return d.x; })
+		.attr("y", function(d) { return d.y; })
+		.attr("width", function(d) { return d.w; })
+		.attr("height", function(d) { return d.h; })
+		.style("fill", function(d) { return (d.level == cur ? 'blue' : 'lightblue'); });
+
+	root.append("text")
+		.attr("class", "levelText")
+		.attr("transform", function(d) { return "translate(" + (d.x + d.w / 2) + "," + (d.y + d.h / 2 + 6) + ")"; })
+		.text(function(d) { return d.displayNum; });
+
+	root.on("click", function(d) {
+		if (defaultInterval) {
+			clearInterval(defaultInterval);
+		}
+		if (moveInterval) {
+			clearInterval(moveInterval);
+		}
+		init(parseInt(d.level));
+	});
 }
 
 function getFinishedLevels() {
