@@ -1,1 +1,84 @@
-[]
+[
+  {
+    "title": "You Will Lose",
+    "momentum": 1875,
+    "ballNum": 3,
+    "expandSpeed": 1,
+    "randAngleInt": 5000
+  },
+  {
+    "title": "Starfall",
+    "momentum": 225,
+    "ballNum": 4,
+    "expandSpeed": 2,
+    "randAngleInt": 2000
+  },
+  {
+    "title": "Molasses",
+    "momentum": 100,
+    "ballNum": 24,
+    "expandSpeed": 0.1,
+    "randAngleInt": 0,
+    "avgSize": 10,
+    "sizeVar": 2.5
+  },
+  {
+    "title": "They Be Going Crazy",
+    "momentum": 75,
+    "ballNum": 10,
+    "expandSpeed": 3,
+    "randAngleInt": 5000,
+    "avgSize": 5,
+    "sizeVar": 1.25
+  },
+  {
+    "title": "Eight Way Traffic",
+    "momentum": 135,
+    "ballNum": 20,
+    "expandSpeed": 1,
+    "randAngleInt": 0,
+    "avgSize": 15,
+    "sizeVar": 3.75
+  },
+  {
+    "title": "Actually Impossible",
+    "momentum": 4800,
+    "ballNum": 155,
+    "expandSpeed": 1,
+    "randAngleInt": 0,
+    "avgSize": 40,
+    "sizeVar": 10
+  },
+  {
+    "title": "Geranium",
+    "momentum": 75,
+    "ballNum": 15,
+    "expandSpeed": 1,
+    "randAngleInt": 1000,
+    "avgSize": 5,
+    "sizeVar": 3.75
+  },
+  {
+    "title": "Four Way Traffic",
+    "momentum": 135,
+    "ballNum": 22,
+    "expandSpeed": 1,
+    "randAngleInt": 0,
+    "avgSize": 15,
+    "sizeVar": 3.75
+  },
+  {
+    "title": "Lily Pads",
+    "momentum": 960,
+    "ballNum": 15,
+    "expandSpeed": 1,
+    "randAngleInt": 1000
+  },
+  {
+    "title": "Micro to Big",
+    "momentum": 300,
+    "ballNum": 10,
+    "expandSpeed": 3,
+    "randAngleInt": 1000
+  }
+]
